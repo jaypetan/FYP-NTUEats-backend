@@ -2,8 +2,8 @@ import express from 'express'
 import dotenv from 'dotenv'
 import { sql } from './config/db.js'
 import rateLimiter from './middleware/rateLimter.js'
-import transactionRoutes from './routes/transactionRoutes.js'
-import recipeRoutes from './routes/reciperRoutes.js'
+import recipeRoute from './routes/recipesRoute.js'
+import usersRoute from './routes/usersRoute.js'
 
 dotenv.config()
 
@@ -16,12 +16,12 @@ const PORT = process.env.PORT || 5001
 
 async function initDB() {
     try {
-        // Drop TABLES, TO BE REMOVED IN ACTUAL PRODUCTION
-        await sql`DROP TABLE IF EXISTS reviews CASCADE;`
-        await sql`DROP TABLE IF EXISTS recipe_comments CASCADE;`
-        await sql`DROP TABLE IF EXISTS recipes CASCADE;`
-        await sql`DROP TABLE IF EXISTS stalls CASCADE;`
-        await sql`DROP TABLE IF EXISTS users CASCADE;`
+        // Drop TABLES, NUKE DATABASE
+        // await sql`DROP TABLE IF EXISTS reviews CASCADE;`
+        // await sql`DROP TABLE IF EXISTS recipe_comments CASCADE;`
+        // await sql`DROP TABLE IF EXISTS recipes CASCADE;`
+        // await sql`DROP TABLE IF EXISTS stalls CASCADE;`
+        // await sql`DROP TABLE IF EXISTS users CASCADE;`
 
         // Create User Table
         await sql `CREATE TABLE IF NOT EXISTS users(
@@ -35,8 +35,8 @@ async function initDB() {
             recipe_id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
             title VARCHAR(255) NOT NULL,
-            instructions TEXT NOT NULL,
-            ingredients TEXT NOT NULL,
+            instructions TEXT[] NOT NULL,
+            ingredients TEXT[] NOT NULL,
             recipe_pic VARCHAR(255),
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )`
@@ -82,8 +82,8 @@ app.get('/', (req, res) => {
     res.send("It's working")
 })
 
-app.use('/api/transactions', transactionRoutes)
-app.use('/api/recipe', recipeRoutes)
+app.use('/api/users', usersRoute)
+app.use('/api/recipes', recipeRoute)
 
 initDB().then(() => {
     app.listen(PORT, () => {
