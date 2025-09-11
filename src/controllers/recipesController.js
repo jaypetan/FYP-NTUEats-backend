@@ -1,8 +1,8 @@
 
 import { sql } from '../config/db.js'
 
-// GET REQUEST: Get recipes by user ID
-export async function getRecipesByUserId(req, res) {
+// GET REQUEST: Get recipes by userId/recipeId
+export async function getRecipes(req, res) {
     try {
         const { userId, recipeId } = req.query
         let whereClause = sql``; // empty by default
@@ -56,10 +56,10 @@ export async function createRecipe(req, res) {
     }
 }
 
-// PUT REQUEST: Edit a recipe by ID
-export async function setRecipeByRecipeId(req, res) {
+// PUT REQUEST: Edit a recipe by recipeId
+export async function setRecipeById(req, res) {
     try {
-        const { recipeId } = req.query
+        const { recipeId } = req.params
         const { title, instructions, ingredients, recipe_pic } = req.body
 
         const [recipe] = await sql`
@@ -83,10 +83,10 @@ export async function setRecipeByRecipeId(req, res) {
     }
 }
 
-// DELETE REQUEST: Delete a recipe
-export async function deleteRecipe(req, res) {
+// DELETE REQUEST: Delete a recipe by recipeId
+export async function deleteRecipeById(req, res) {
     try {
-        const { recipeId } = req.query
+        const { recipeId } = req.params
         const result = await sql`
             DELETE FROM recipes WHERE recipe_id = ${recipeId}
             RETURNING *

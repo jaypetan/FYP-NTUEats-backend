@@ -1,18 +1,18 @@
 import express from 'express';
-import { getRecipesByUserId, createRecipe, setRecipeByRecipeId, deleteRecipe } from '../controllers/recipesControllers.js';
+import { getRecipes, createRecipe, setRecipeById, deleteRecipeById } from '../controllers/recipesController.js';
 
 const router = express.Router();
 
 // Get recipes by userId or recipeId
-router.get('/', getRecipesByUserId);
+router.get('/', getRecipes);
 
 // Create a new recipe
 router.post('/', createRecipe);
 
 // Update a recipe by recipeId
-router.put('/', setRecipeByRecipeId);
+router.put('/:recipeId', setRecipeById);
 
 // Delete a recipe by recipeId
-router.delete('/', deleteRecipe);
+router.delete('/:recipeId', deleteRecipeById);
 
 export default router;

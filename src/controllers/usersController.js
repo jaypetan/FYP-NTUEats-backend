@@ -1,13 +1,14 @@
 
 import { sql } from '../config/db.js'
 
-// GET REQUEST: Get users by user ID
-export async function getUsersByUserId(req, res) {
+// GET REQUEST: Get user by userId
+export async function getUserById(req, res) {
     try {
-        const { userId } = req.query
+        const { userId } = req.params;
+
+        // Fetch user from the database
         const users = await sql`
             SELECT * FROM users WHERE user_id = ${userId}
-            ORDER BY created_at DESC
         `
         // Check for empty result
         if (users.length === 0) {
@@ -44,10 +45,10 @@ export async function createUser(req, res) {
     }
 }
 
-// PUT REQUEST: Edit a user by ID
-export async function setUserByUserId(req, res) {
+// PUT REQUEST: Edit a user by userId
+export async function setUserById(req, res) {
     try {
-        const { userId } = req.query
+        const { userId } = req.params
         const { clerk_id, username } = req.body
 
         const [user] = await sql`
@@ -71,10 +72,10 @@ export async function setUserByUserId(req, res) {
     }
 }
 
-// DELETE REQUEST: Delete a user
-export async function deleteUser(req, res) {
+// DELETE REQUEST: Delete a user by userId
+export async function deleteUserById(req, res) {
     try {
-        const { userId } = req.query
+        const { userId } = req.params
         const result = await sql`
             DELETE FROM users WHERE user_id = ${userId}
             RETURNING *

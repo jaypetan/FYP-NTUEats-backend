@@ -1,14 +1,17 @@
 import express from 'express'
 import dotenv from 'dotenv'
 import { sql } from './config/db.js'
-import rateLimiter from './middleware/rateLimter.js'
+// import rateLimiter from './middleware/rateLimter.js'
 import recipeRoute from './routes/recipesRoute.js'
 import usersRoute from './routes/usersRoute.js'
+import recipesCommentsRoute from './routes/recipesCommentsRoute.js'
+import stallsRoute from './routes/stallsRoute.js'
+import reviewsRoute from './routes/reviewsRoute.js'
 
 dotenv.config()
 
 const app = express()
-app.use(rateLimiter)
+// app.use(rateLimiter)
 app.use(express.json())
 
 
@@ -45,9 +48,9 @@ async function initDB() {
             comment_id SERIAL PRIMARY KEY,
             user_id INTEGER NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
             recipe_id INTEGER NOT NULL REFERENCES recipes(recipe_id) ON DELETE CASCADE,
-            parent_comment_id INTEGER REFERENCES recipe_comments(comment_id) ON DELETE CASCADE,
+            parent_id INTEGER REFERENCES recipe_comments(comment_id) ON DELETE CASCADE,
             title VARCHAR(255) NOT NULL,
-            comment TEXT NOT NULL,
+            content TEXT NOT NULL,
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )`
         // Create Stalls Table
@@ -56,8 +59,9 @@ async function initDB() {
             name VARCHAR(255) NOT NULL,
             rating DECIMAL(2, 1),
             description TEXT NOT NULL,
-            stall_pic VARCHAR(255),
             canteen VARCHAR(255) NOT NULL,
+            stall_pic VARCHAR(255),
+            menu_pic VARCHAR(255),
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )`
         // Create Reviews Table
@@ -67,7 +71,7 @@ async function initDB() {
             stall_id INTEGER NOT NULL REFERENCES stalls(stall_id) ON DELETE CASCADE,
             rating DECIMAL(2, 1) NOT NULL,
             title VARCHAR(255) NOT NULL,
-            comment TEXT NOT NULL,
+            content TEXT NOT NULL,
             review_pic VARCHAR(255),
             created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
         )`
@@ -84,6 +88,9 @@ app.get('/', (req, res) => {
 
 app.use('/api/users', usersRoute)
 app.use('/api/recipes', recipeRoute)
+app.use('/api/recipe-comments', recipesCommentsRoute)
+app.use('/api/stalls', stallsRoute)
+app.use('/api/reviews', reviewsRoute)
 
 initDB().then(() => {
     app.listen(PORT, () => {
